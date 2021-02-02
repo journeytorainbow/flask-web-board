@@ -8,6 +8,7 @@ from flask import abort
 from flask import redirect
 from flask import url_for
 import time
+import math
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/pywebboard"
@@ -73,9 +74,35 @@ def board_view() :
 
 @app.route("/list")
 def show_list() :
+    # 페이지 번호 (기본값 : 1)
+    page = request.args.get("page", 1, type=int)
+    # 한 페이지당 보여질 게시물 수
+    post_num = 10
+    # # 한 페이지당 보여질 게시물 수 (기본값 : 10)
+    # limit = request.args.get("limit", 10, type=int)
+
     board = mongo.db.board
-    datas = board.find({})
-    return render_template("list.html", datas=datas)
+    # 게시물 총 개수
+    tot_count = board.find({}).count()
+    # 마지막 페이지
+    last_page_num = math.ceil(tot_count / post_num)
+    # 한 블럭 당 페이지 5개씩 표기
+    block_size = 5
+    # 현재 보고 있는 페이지의 블럭이 몇 번째 블럭인지(0번째부터)
+    block_num = int((page - 1) / block_size)
+    # 현재 블럭의 맨 앞 페이지 번호
+    block_start = int((block_size * block_num) + 1)
+    # 현재 블럭의 맨 끝 페이지 번호
+    block_end = (block_start + block_size) - 1
+
+    datas = board.find({}).skip((page-1) * post_num).limit(post_num)
+    return render_template("list.html", 
+                            datas=datas, 
+                            post_num=post_num, 
+                            page=page, 
+                            block_start=block_start, 
+                            block_end=block_end,
+                            last_page_num=last_page_num)
 
 if __name__ == "__main__":
     app.run(debug=True)
