@@ -149,7 +149,7 @@ def member_join():
         pw = request.form.get("pw", type=str)
         pw2= request.form.get("pw2", type=str)
 
-        if name == "" or email == "" or pw == "" or pw2 == "":
+        if name.replace(" ", "") == "" or email.replace(" ", "") == "" or pw.replace(" ", "") == "" or pw2.replace(" ", "") == "":
             flash("입력되지 않은 값이 있습니다.")
             return render_template("join.html")
 
