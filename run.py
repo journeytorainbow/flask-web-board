@@ -10,6 +10,7 @@ from flask import redirect
 from flask import url_for
 from flask import flash
 from flask import session
+from functools import wraps
 import time
 import math
 
@@ -18,6 +19,15 @@ app.config["MONGO_URI"] = "mongodb://localhost:27017/pywebboard"
 app.config["SECRET_KEY"] = "abcd" # flash함수 사용하기 위해서 반드시 필요 & 실제로는 더 복잡한 값을 줘야함
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30) # 세션 유지 시간 30분
 mongo = PyMongo(app) # 이 객체로 mongoDB에 접근할 수 있음
+
+# 유저의 로그인 여부 확인을 위한 데코레이터
+def login_required(f):
+    @wraps(f)
+    def decorated_fucntion(*args, **kwargs):
+        if session.get("id") is None or session.get("id") == "":
+            return redirect(url_for("member_login", next_url=request.url)) # next_url : 이 데코레이터가 호출된 페이지의 url을 의미
+        return f(*args, **kwargs)
+    return decorated_fucntion
 
 @app.template_filter("formatdatetime")
 def formate_datetime(value) :
@@ -33,6 +43,7 @@ def formate_datetime(value) :
 
 # 글작성
 @app.route("/write", methods=["GET", "POST"])
+@login_required # 로그인한 회원만 글작성 가능
 def board_write():
     if request.method == "POST" :
         name = request.form.get("name")
@@ -47,6 +58,7 @@ def board_write():
             "title" : title,
             "contents" : contents,
             "pubdate" : current_utc_time, # 작성 시간
+            "writer_id": session.get("id"), # 글,수정 삭제 시에 작성자 본인인지 확인하기 위한 값
             "view" : 0
         }
 
@@ -59,6 +71,7 @@ def board_write():
 
 # 글 상세 보기
 @app.route("/view")
+@login_required # 로그인한 회원만 글 열람 가능
 def board_view() :
     idx = request.args.get("idx")
 
@@ -77,7 +90,8 @@ def board_view() :
                 "title" : data.get("title"),
                 "contents" : data.get("contents"),
                 "pubdate" : data.get("pubdate"),
-                "view" : data.get("view")
+                "view" : data.get("view"),
+                "writer_id": data.get("writer_id", "")
             }
             
             return render_template("view.html", result=result, page=page, search=search, keyword=keyword)
@@ -185,6 +199,7 @@ def member_login():
     if request.method == "POST":
         email = request.form.get("email")
         pw = request.form.get("pw")
+        next_url = request.form.get("next_url")
         
         members = mongo.db.members
 
@@ -198,14 +213,21 @@ def member_login():
             if data.get("pw") == pw:
                 session["email"] = email
                 session["name"] = data.get("name")
-                session["id"] = str(data.get("_id"))
+                session["id"] = str(data.get("_id")) # mondoDB의 유니크한 id 값을 지정
                 session.permanent = True # 세션 유지 시간을 임의로 지정하기 위해 True를 줌
-                return redirect(url_for("show_list"))
+                if next_url is not None:
+                    return redirect(next_url)
+                else:
+                    return redirect(url_for("show_list"))
             else:
                 flash("비밀번호가 일치하지 않습니다!")
                 return redirect(url_for("member_login"))
     else:
-        return render_template("login.html")
+        next_url = request.args.get("next_url", type=str)
+        if next_url is not None:
+            return render_template("login.html", next_url=next_url)
+        else:
+            return render_template("login.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
