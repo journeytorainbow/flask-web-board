@@ -14,7 +14,7 @@
     {% for data in datas %}
     <tr>
         <td>{{loop.index + (page - 1) * post_num}}</td>
-        <td><a href="{{url_for('board_view', idx=data._id, search=search, keyword=keyword)}}">{{data.title}}</a></td>
+        <td><a href="{{url_for('board_view', page=page, idx=data._id, search=search, keyword=keyword)}}">{{data.title}}</a></td>
         <td>{{data.name}}</td>
         <td>{{data.pubdate | formatdatetime}}</td>
         <td>{{data.view}}</td>

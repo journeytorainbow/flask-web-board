@@ -55,6 +55,11 @@ def board_write():
 @app.route("/view")
 def board_view() :
     idx = request.args.get("idx")
+
+    page = request.args.get("page")
+    search = request.args.get("search")
+    keyword = request.args.get("keyword")
+
     if idx is not None :
         board = mongo.db.board
         data = board.find_one({"_id" : ObjectId(idx)})
@@ -69,7 +74,7 @@ def board_view() :
                 "view" : data.get("view")
             }
             
-            return render_template("view.html", result=result)
+            return render_template("view.html", result=result, page=page, search=search, keyword=keyword)
     return abort(400)
 
 @app.route("/list")
