@@ -74,7 +74,7 @@ def board_view() :
 @app.route("/list")
 def show_list() :
     board = mongo.db.board
-    datas = board.find({}).skip(page-1)
+    datas = board.find({})
     return render_template("list.html", datas=datas)
 
 if __name__ == "__main__":
