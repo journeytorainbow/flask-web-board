@@ -26,6 +26,7 @@ def formate_datetime(value) :
     value = datetime.fromtimestamp(int(value) / 1000) + offset
     return value.strftime('%Y-%m-%d %H:%M:%S')
 
+# 글작성
 @app.route("/write", methods=["GET", "POST"])
 def board_write():
     if request.method == "POST" :
@@ -50,8 +51,8 @@ def board_write():
 
     else :
         return render_template("write.html")
-    return "헬로 파이썬"
 
+# 글 상세 보기
 @app.route("/view")
 def board_view() :
     idx = request.args.get("idx")
@@ -77,6 +78,7 @@ def board_view() :
             return render_template("view.html", result=result, page=page, search=search, keyword=keyword)
     return abort(400)
 
+# 글목록
 @app.route("/list")
 def show_list() :
     # 페이지 번호 (기본값 : 1)
