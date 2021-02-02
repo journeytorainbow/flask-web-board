@@ -3,17 +3,20 @@ from flask import request
 from flask import render_template
 from flask_pymongo import PyMongo
 from datetime import datetime
+from datetime import timedelta
 from bson.objectid import ObjectId
 from flask import abort
 from flask import redirect
 from flask import url_for
 from flask import flash
+from flask import session
 import time
 import math
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/pywebboard"
 app.config["SECRET_KEY"] = "abcd" # flash함수 사용하기 위해서 반드시 필요 & 실제로는 더 복잡한 값을 줘야함
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30) # 세션 유지 시간 30분
 mongo = PyMongo(app) # 이 객체로 mongoDB에 접근할 수 있음
 
 @app.template_filter("formatdatetime")
@@ -176,6 +179,33 @@ def member_join():
 
     else:
         return render_template("join.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def member_login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        pw = request.form.get("pw")
+        
+        members = mongo.db.members
+
+        # 이메일 값으로 회원 데이터 찾아옴
+        data = members.find_one({"email": email})
+
+        if data is None : # 존재하지 않는 이메일일 경우
+            flash("회원 정보가 없습니다!")
+            return redirect(url_for("member_login")) # GET방식요청 따라서 아래 else문으로 빠짐
+        else:
+            if data.get("pw") == pw:
+                session["email"] = email
+                session["name"] = data.get("name")
+                session["id"] = str(data.get("_id"))
+                session.permanent = True # 세션 유지 시간을 임의로 지정하기 위해 True를 줌
+                return redirect(url_for("show_list"))
+            else:
+                flash("비밀번호가 일치하지 않습니다!")
+                return redirect(url_for("member_login"))
+    else:
+        return render_template("login.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
