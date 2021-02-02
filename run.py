@@ -81,9 +81,31 @@ def show_list() :
     # # 한 페이지당 보여질 게시물 수 (기본값 : 10)
     # limit = request.args.get("limit", 10, type=int)
 
+    search = request.args.get("search", -1, type=int)
+    keyword = request.args.get("keyword", "", type=str) # 기본값 지정안해주면 None
+    
+    # 최종적으로 완성된 쿼리를 만들 변수
+    query = {}
+    # 검색어 상태를 추가할 리스트 변수
+    search_list = []
+
+    if search == 0:
+        search_list.append({"title" : {"$regex":keyword}}) # keyword가 포함된 모든 title
+    elif search == 1:
+        search_list.append({"contents" : {"$regex":keyword}})
+    elif search == 2:
+        search_list.append({"title" : {"$regex":keyword}})
+        search_list.append({"contents" : {"$regex":keyword}})
+    elif search == 3:
+        search_list.append({"name" : {"$regex":keyword}})
+    
+    # 검색어가 하나라도 있는 경우 query 변수에 $or 리스트를 쿼리
+    if len(search_list) > 0 :
+        query = {"$or": search_list}
+
     board = mongo.db.board
     # 게시물 총 개수
-    tot_count = board.find({}).count()
+    tot_count = board.find(query).count()
     # 마지막 페이지
     last_page_num = math.ceil(tot_count / post_num)
     # 한 블럭 당 페이지 5개씩 표기
@@ -95,14 +117,16 @@ def show_list() :
     # 현재 블럭의 맨 끝 페이지 번호
     block_end = (block_start + block_size) - 1
 
-    datas = board.find({}).skip((page-1) * post_num).limit(post_num)
+    datas = board.find(query).skip((page-1) * post_num).limit(post_num)
     return render_template("list.html", 
                             datas=datas, 
                             post_num=post_num, 
                             page=page, 
                             block_start=block_start, 
                             block_end=block_end,
-                            last_page_num=last_page_num)
+                            last_page_num=last_page_num,
+                            search=search,
+                            keyword=keyword)
 
 if __name__ == "__main__":
     app.run(debug=True)
