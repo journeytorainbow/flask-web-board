@@ -1,0 +1,29 @@
+{% if datas.count() > 0 %}
+<table>
+    <thead>
+        <tr>
+            <td>번호</td>
+            <td>제목</td>
+            <td>이름</td>
+            <td>날짜</td>
+            <td>조회수</td>
+        </tr>
+    </thead>
+    <tbody>
+    <!-- 반복 구간 -->
+    {% for data in datas %}
+    <tr>
+        <td>{{loop.index}}</td>
+        <td><a href="{{url_for('board_view', idx=data._id)}}">{{data.title}}</a></td>
+        <td>{{data.name}}</td>
+        <td>{{data.pubdate | formatdatetime}}</td>
+        <td>{{data.view}}</td>
+    </tr>
+    {% endfor %}
+    <!-- 반복 구간 끝-->
+    </tbody>
+
+</table>
+{% else %}
+<h3>게시물이 존재하지 않습니다.</h3>
+{% endif %}
