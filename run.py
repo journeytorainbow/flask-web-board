@@ -7,11 +7,13 @@ from bson.objectid import ObjectId
 from flask import abort
 from flask import redirect
 from flask import url_for
+from flask import flash
 import time
 import math
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/pywebboard"
+app.config["SECRET_KEY"] = "abcd" # flash함수 사용하기 위해서 반드시 필요 & 실제로는 더 복잡한 값을 줘야함
 mongo = PyMongo(app) # 이 객체로 mongoDB에 접근할 수 있음
 
 @app.template_filter("formatdatetime")
@@ -134,6 +136,46 @@ def show_list() :
                             last_page_num=last_page_num,
                             search=search,
                             keyword=keyword)
+
+# 회원가입
+@app.route("/join", methods=["GET", "POST"])
+def member_join():
+    if request.method == "POST":
+        name = request.form.get("name", type=str)
+        email = request.form.get("email", type=str)
+        pw = request.form.get("pw", type=str)
+        pw2= request.form.get("pw2", type=str)
+
+        if name == "" or email == "" or pw == "" or pw2 == "":
+            flash("입력되지 않은 값이 있습니다.")
+            return render_template("join.html")
+
+        if pw != pw2:
+            flash("비밀번호가 일치하지 않습니다.")
+            return render_template("join.html")
+        
+        members = mongo.db.members
+        cnt = members.find({"email" : email}).count()
+        if cnt > 0:
+            flash("중복된 이메일 주소입니다.")
+            return render_template("join.html")
+
+        current_utc_time = round(datetime.utcnow().timestamp() * 1000)
+        
+        post = {
+            "name": name,
+            "email": email,
+            "pw": pw,
+            "joindate": current_utc_time,
+            "logintime": "",
+            "logincount": 0,
+        }
+
+        members.insert_one(post)
+        return ""
+
+    else:
+        return render_template("join.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
