@@ -6,6 +6,6 @@ def login_required(f):
     @wraps(f)
     def decorated_fucntion(*args, **kwargs):
         if session.get("id") is None or session.get("id") == "":
-            return redirect(url_for("member_login", next_url=request.url)) # next_url : 이 데코레이터가 호출된 페이지의 url을 의미
+            return redirect(url_for("member.member_login", next_url=request.url)) # next_url : 이 데코레이터가 호출된 페이지의 url을 의미
         return f(*args, **kwargs)
     return decorated_fucntion

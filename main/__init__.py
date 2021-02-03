@@ -23,3 +23,6 @@ from .common import login_required
 from .filter import format_datetime
 from . import board
 from . import member
+
+app.register_blueprint(board.blueprint)
+app.register_blueprint(member.blueprint)

@@ -1,7 +1,10 @@
 from main import *
+from flask import Blueprint
+
+blueprint = Blueprint("member", __name__, url_prefix="/member")
 
 # 회원가입
-@app.route("/join", methods=["GET", "POST"])
+@blueprint.route("/join", methods=["GET", "POST"])
 def member_join():
     if request.method == "POST":
         name = request.form.get("name", type=str)
@@ -40,7 +43,7 @@ def member_join():
     else:
         return render_template("join.html")
 
-@app.route("/login", methods=["GET", "POST"])
+@blueprint.route("/login", methods=["GET", "POST"])
 def member_login():
     if request.method == "POST":
         email = request.form.get("email")
@@ -54,7 +57,7 @@ def member_login():
 
         if data is None : # 존재하지 않는 이메일일 경우
             flash("회원 정보가 없습니다!")
-            return redirect(url_for("member_login")) # GET방식요청 따라서 아래 else문으로 빠짐
+            return redirect(url_for("member.member_login")) # GET방식요청 따라서 아래 else문으로 빠짐
         else:
             if data.get("pw") == pw:
                 session["email"] = email
@@ -64,10 +67,10 @@ def member_login():
                 if next_url is not None:
                     return redirect(next_url)
                 else:
-                    return redirect(url_for("show_list"))
+                    return redirect(url_for("board.show_list"))
             else:
                 flash("비밀번호가 일치하지 않습니다!")
-                return redirect(url_for("member_login"))
+                return redirect(url_for("member.member_login"))
     else:
         next_url = request.args.get("next_url", type=str)
         if next_url is not None:
