@@ -77,3 +77,10 @@ def member_login():
             return render_template("login.html", next_url=next_url, title="로그인")
         else:
             return render_template("login.html", title="로그인")
+
+@blueprint.route("/logout")
+def member_logout():
+    del session["name"]
+    del session["id"]
+    del session["email"]
+    return redirect(url_for('member.member_login'))
