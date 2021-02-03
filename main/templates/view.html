@@ -19,7 +19,8 @@
 
 {% if session["id"] == result.writer_id %}
     <a class="float-right btn btn-danger ml-2" href="{{url_for('board.board_delete', idx=result.id)}}">글삭제</a>
-    <a class="float-right btn btn-warning" href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
-    {% endif %}
+    <a class="float-right btn btn-warning ml-2" href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
+{% endif %}
+<a class="float-right btn btn-primary" href="{{url_for('board.show_list', page=page, search=search, keyword=keyword)}}">글목록</a>
 
 {% endblock %}
