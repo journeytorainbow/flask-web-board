@@ -1,37 +1,27 @@
 {% extends "main.html" %}
 
 {% block contents %}
-<table>
-    <form name="form" id="joinForm" action="{{url_for('member.member_join')}}" method="POST">
-    <thead>
-        <caption>회원가입</caption>
-    </thead>
-    <tbody>
-        <tr>
-            <td>이름</td>
-            <td><input type="text" id="name" name="name"></td>
-        </tr>
-        <tr>
-            <td>이메일</td>
-            <td><input type="text" id="email" name="email"></td>
-        </tr>
-        <tr>
-            <td>비밀번호</td>
-            <td><input type="password" id="pw" name="pw"></td>
-        </tr>
-        <tr>
-            <td>비밀번호 확인</td>
-            <td><input type="password" id="pw2" name="pw2"></td>
-        </tr>
-        <tr>
-            <td colspan="2"><input id="joinBtn" type="submit" value="가입하기"></td>
-        </tr>
-    </tbody>
-    </form>
-</table>
+<form name="form" id="joinForm" action="{{url_for('member.member_join')}}" method="POST">
+    <div class="form-group">
+        <label for="name">이름</label>
+        <input class="form-control" type="text" id="name" name="name">
+    </div>
+    <div class="form-group">
+        <label for="email">이메일</label>
+        <input class="form-control" type="text" id="email" name="email">
+    </div>
+    <div class="form-group">
+        <label for="pw">비밀번호</label>
+        <input class="form-control" type="password" id="pw" name="pw">
+    </div>
+    <div class="form-group">
+        <label for="pw2">비밀번호 확인</label>
+        <input class="form-control" type="password" id="pw2" name="pw2">
+    </div>
+    <div class="text-right"><input class="btn btn-primary" id="joinBtn" type="submit" value="회원가입"></div>
+</form>
 
 <script>
-
     var email = $("#email");
     var name = $("#name");
     var pw = $("#pw");

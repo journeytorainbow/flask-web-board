@@ -1,20 +1,25 @@
 {% extends "main.html" %}
 
 {% block contents %}
-    {{result.title}}
-    <br>
-    {{result.name}}
-    <br>
-    {{result.contents}}
-    <br>
-    {{result.pubdate|formatdatetime}}
-    <br>
-    {{result.view}}
-    <br>
-    <a href="{{url_for('board.show_list', page=page, search=search, keyword=keyword)}}">글목록</a>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td colspan="3">{{result.title}}</td>
+        </tr>
+        <tr>
+            <td class="text-right">작성자 : {{result.name}}</td>
+            <td class="text-right">작성시간 : {{result.pubdate|formatdatetime}}</td>
+            <td class="text-right">view : {{result.view}}</td>
+        </tr>
+        <tr>
+            <td colspan="3"><div style="min-height:200px;">{{result.contents}}</div></td>
+        </tr>
+    </tbody>
+</table>
 
-    {% if session["id"] == result.writer_id %}
-    <a href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
-    <a href="{{url_for('board.board_delete', idx=result.id)}}">글삭제</a>
+{% if session["id"] == result.writer_id %}
+    <a class="float-right btn btn-danger ml-2" href="{{url_for('board.board_delete', idx=result.id)}}">글삭제</a>
+    <a class="float-right btn btn-warning" href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
     {% endif %}
+
 {% endblock %}

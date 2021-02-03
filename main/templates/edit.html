@@ -1,25 +1,21 @@
 {% extends "main.html" %}
 
 {% block contents %}
-        <table>
-            <form name="form" id="editForm" action="{{url_for('board.board_edit', idx=data._id)}}" method="POST">
-            <tr>
-                <td>작성자</td>
-                <td><input type="text" name="name" value="{{session['name']}}" readonly></td>
-            </tr>
-            <tr>
-                <td>제목</td>
-                <td><input type="text" id="title" name="title" value="{{data.title}}"></td>
-            </tr>
-            <tr>
-                <td>내용</td>
-                <td><textarea id="contents" name="contents">{{data.contents}}</textarea>
-            </tr>
-            <tr>
-                <td colspan="2"><input id="editBtn" type="submit"></td>
-            </tr>
-            </form>
-        </table>
+<form name="form" id="editForm" action="{{url_for('board.board_edit', idx=data._id)}}" method="POST">
+    <div class="form-group">
+        <label for="writer">작성자</label>
+        <input class="form-control" id="name" type="text" name="name" value="{{session['name']}}" readonly>
+    </div>
+    <div class="form-group">
+        <label for="title">제목</label>
+        <input class="form-control" id="title" type="text" value="{{data.title}}" name="title">
+    </div>
+    <div class="form-group">
+        <label for="title">내용</label>
+        <textarea class="form-control" id="contents" type="text" name="contents">{{data.contents}}</textarea>
+    </div>
+    <div class="text-right"><input class="btn btn-primary" id="editBtn" type="submit" value="제출"></div>
+</form>
 
 <script>
     var contents = $("#contents");
