@@ -2,7 +2,7 @@ from datetime import datetime
 from main import app, datetime, time
 
 @app.template_filter("formatdatetime")
-def formate_datetime(value) :
+def format_datetime(value) :
     if value is None :
         return ""
 

@@ -20,6 +20,6 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30) # 세션 유지
 mongo = PyMongo(app) # 이 객체로 mongoDB에 접근할 수 있음
 
 from .common import login_required
-from .filter import formate_datetime
+from .filter import format_datetime
 from . import board
 from . import member
