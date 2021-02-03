@@ -142,7 +142,7 @@ def show_list() :
     # 현재 블럭의 맨 끝 페이지 번호
     block_end = (block_start + block_size) - 1
 
-    datas = board.find(query).skip((page-1) * post_num).limit(post_num)
+    datas = board.find(query).skip((page-1) * post_num).limit(post_num).sort("pubdate", -1)
     return render_template("list.html", 
                             datas=datas, 
                             post_num=post_num, 
