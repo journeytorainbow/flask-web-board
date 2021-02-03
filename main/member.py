@@ -41,7 +41,7 @@ def member_join():
         return ""
 
     else:
-        return render_template("join.html")
+        return render_template("join.html", title="회원가입")
 
 @blueprint.route("/login", methods=["GET", "POST"])
 def member_login():
@@ -74,6 +74,6 @@ def member_login():
     else:
         next_url = request.args.get("next_url", type=str)
         if next_url is not None:
-            return render_template("login.html", next_url=next_url)
+            return render_template("login.html", next_url=next_url, title="로그인")
         else:
-            return render_template("login.html")
+            return render_template("login.html", title="로그인")

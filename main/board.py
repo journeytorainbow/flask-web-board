@@ -28,7 +28,7 @@ def board_write():
         return redirect(url_for("board.board_view", idx=x.inserted_id))
 
     else :
-        return render_template("write.html")
+        return render_template("write.html", title="글작성")
 
 # 글 상세 보기
 @blueprint.route("/view")
@@ -54,7 +54,7 @@ def board_view() :
                 "writer_id": data.get("writer_id", "")
             }
             
-            return render_template("view.html", result=result, page=page, search=search, keyword=keyword)
+            return render_template("view.html", result=result, page=page, search=search, keyword=keyword, title="글 상세보기")
     return abort(400)
 
 # 글목록
@@ -107,12 +107,13 @@ def show_list() :
     return render_template("list.html", 
                             datas=datas, 
                             post_num=post_num, 
-                            page=page, 
+                            page=page,
                             block_start=block_start, 
                             block_end=block_end,
                             last_page_num=last_page_num,
                             search=search,
-                            keyword=keyword)
+                            keyword=keyword,
+                            title="글목록")
 
 @blueprint.route("/edit/<idx>", methods=["GET", "POST"])
 def board_edit(idx):
@@ -125,7 +126,7 @@ def board_edit(idx):
             return redirect(url_for("board.show_list"))
         else:
             if session.get("id") == data.get("writer_id"): # 작성자와 세션아이디가 일치하는지 확인
-                return render_template("edit.html", data=data)
+                return render_template("edit.html", data=data, title="글수정")
             else:
                 flash("글 수정 권한이 없습니다.")
                 return redirect(url_for("board.board_view", idx=data.get("_id")))

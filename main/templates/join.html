@@ -1,12 +1,8 @@
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <script>
-            alert("{{messages[-1]}}")
-        </script>
-    {% endif %}
-{% endwith %}
+{% extends "main.html" %}
+
+{% block contents %}
 <table>
-    <form name="form" action="/join" method="POST">
+    <form name="form" action="{{url_for('member.member_join')}}" method="POST">
     <thead>
         <caption>회원가입</caption>
     </thead>
@@ -33,3 +29,4 @@
     </tbody>
     </form>
 </table>
+{% endblock %}
