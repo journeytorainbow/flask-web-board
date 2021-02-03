@@ -2,22 +2,59 @@
 
 {% block contents %}
         <table>
-            <form name="form" action="{{url_for('board.board_write')}}" method="POST">
+            <form name="form" id="writeForm" action="{{url_for('board.board_write')}}" method="POST">
             <tr>
                 <td>작성자</td>
                 <td><input type="text" name="name" value="{{session['name']}}" readonly></td>
             </tr>
             <tr>
                 <td>제목</td>
-                <td><input type="text" name="title"></td>
+                <td><input type="text" id="title" name="title"></td>
             </tr>
             <tr>
                 <td>내용</td>
-                <td><textarea name="contents"></textarea>
+                <td><textarea id="contents" name="contents"></textarea>
             </tr>
             <tr>
-                <td colspan="2"><input type="submit"></td>
+                <td colspan="2"><input id="writeBtn" type="submit"></td>
             </tr>
             </form>
         </table>
+
+<script>
+    var contents = $("#contents");
+    var title = $("#title");
+
+    // 공백 체크
+    var pattern = /\s/g;
+
+    function checkForm() {
+        console.log("checkForm() call....");
+
+        if(title.val() == "" || title.val().match(pattern)) {
+            alert("제목을 입력해주세요!");
+            title.focus();
+            return false;
+        }
+
+        if(contents.val() == "" || contents.val().match(pattern)) {
+            alert("내용을 입력해주세요!");
+            contents.focus();
+            return false;
+        }
+        return true;
+    }
+
+    var writeBtn = $("#writeBtn");
+    var writeForm = $("#writeForm");
+
+    writeBtn.on("click", function(e) {
+
+        if(!checkForm()) {
+            e.preventDefault();
+        } else {
+            writeForm.submit();
+        }
+    });
+</script>
 {% endblock %}

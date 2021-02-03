@@ -2,31 +2,91 @@
 
 {% block contents %}
 <table>
-    <form name="form" action="{{url_for('member.member_join')}}" method="POST">
+    <form name="form" id="joinForm" action="{{url_for('member.member_join')}}" method="POST">
     <thead>
         <caption>회원가입</caption>
     </thead>
     <tbody>
         <tr>
             <td>이름</td>
-            <td><input type="text" name="name"></td>
+            <td><input type="text" id="name" name="name"></td>
         </tr>
         <tr>
             <td>이메일</td>
-            <td><input type="text" name="email"></td>
+            <td><input type="text" id="email" name="email"></td>
         </tr>
         <tr>
             <td>비밀번호</td>
-            <td><input type="password" name="pw"></td>
+            <td><input type="password" id="pw" name="pw"></td>
         </tr>
         <tr>
             <td>비밀번호 확인</td>
-            <td><input type="password" name="pw2"></td>
+            <td><input type="password" id="pw2" name="pw2"></td>
         </tr>
         <tr>
-            <td colspan="2"><input type="submit" value="가입하기"></td>
+            <td colspan="2"><input id="joinBtn" type="submit" value="가입하기"></td>
         </tr>
     </tbody>
     </form>
 </table>
+
+<script>
+
+    var email = $("#email");
+    var name = $("#name");
+    var pw = $("#pw");
+    var pw2 = $("#pw2");
+
+    // 공백 체크
+    var pattern = /\s/g;
+
+    function checkForm() {
+        console.log("checkForm() call....");
+
+        if(name.val() == "" || name.val().match(pattern)) {
+            alert("이름을 입력해주세요!");
+            name.focus();
+            return false;
+        }
+
+        if(email.val() == "" || email.val().match(pattern)) {
+            alert("이메일을 입력해주세요!");
+            email.focus();
+            return false;
+        } else {
+            if(!validateEmail(email.val())) {
+                alert("이메일 유효성이 올바르지 않습니다!");
+                email.focus();
+                return false;
+            }
+        }
+
+        if(pw.val() == "" || pw.val().match(pattern)) {
+            alert("비밀번호를 입력하세요!");
+            pw.focus();
+            return false;
+        } else {
+            if(pw.val() != pw2.val()) {
+                alert("비밀번호가 일치하지 않습니다!");
+                pw2.select().focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    var joinBtn = $("#joinBtn");
+    var joinForm = $("#joinForm");
+
+    joinBtn.on("click", function(e) {
+
+        if(!checkForm()) {
+            e.preventDefault();
+        } else {
+            joinForm.submit();
+        }
+    });
+</script>
+
 {% endblock %}

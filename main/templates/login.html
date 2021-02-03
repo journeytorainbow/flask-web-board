@@ -2,7 +2,7 @@
 
 {% block contents %}
 <table>
-    <form name="form" action="{{url_for('member.member_login')}}" method="POST">
+    <form name="form" id="loginForm" action="{{url_for('member.member_login')}}" method="POST">
     {% if next_url %}
         <input type="hidden" name="next_url" value="{{next_url}}">
     {% endif %}
@@ -12,16 +12,61 @@
         <tbody>
             <tr>
                 <td>이메일</td>
-                <td><input type="text" name="email"></td>
+                <td><input id="email" type="text" name="email"></td>
             </tr>
             <tr>
                 <td>비밀번호</td>
-                <td><input type="password" name="pw"></td>
+                <td><input type="password" id="pw" name="pw"></td>
             </tr>
             <tr>
-                <td colspan="2"><input type="submit" value="로그인"></td>
+                <td colspan="2"><input id="loginBtn" type="submit" value="로그인"></td>
             </tr>
         </tbody>
     </form>
 </table>
+
+<script>
+
+    var email = $("#email");
+    var pw = $("#pw");
+    
+    // 공백 체크
+    var pattern = /\s/g;
+
+    function checkForm() {
+        console.log("checkForm() call....");
+
+        if(email.val() == "" || email.val().match(pattern)) {
+            alert("이메일을 입력해주세요!");
+            email.focus();
+            return false;
+        } else {
+            if(!validateEmail(email.val())) {
+                alert("이메일 유효성이 올바르지 않습니다!");
+                email.focus();
+                return false;
+            }
+        }
+
+        if(pw.val() == "" || pw.val().match(pattern)) {
+            alert("비밀번호를 입력해주세요!");
+            pw.focus();
+            return false;
+        }
+        return true;
+    }
+
+    var loginBtn = $("#loginBtn");
+    var loginForm = $("#loginForm");
+
+    loginBtn.on("click", function(e) {
+
+        if(!checkForm()) {
+            e.preventDefault();
+        } else {
+            loginForm.submit();
+        }
+    });
+</script>
+
 {% endblock %}
