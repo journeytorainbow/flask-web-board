@@ -81,8 +81,7 @@ def board_view() :
 
     if idx is not None :
         board = mongo.db.board
-        data = board.find_one({"_id" : ObjectId(idx)})
-
+        data = board.find_one_and_update({"_id": ObjectId(idx)}, {"$inc": {"view": 1}}, return_document=True)
         if data is not None :
             result = {
                 "id" : data.get("_id"),
@@ -188,10 +187,16 @@ def board_edit(idx):
             flash("글 수정 권한이 없습니다.")
             return redirect(url_for("show_list"))
 
-@app.route("/delete")
-def board_delete():
-    idx = request.args.get("idx")
-    return ""
+@app.route("/delete/<idx>")
+def board_delete(idx):
+    board = mongo.db.board
+    data = board.find_one({"_id": ObjectId(idx)})
+    if data.get("writer_id") == session.get("id"): # 작성자와 현재 세션 아이디가 일치하는지 확인
+        board.delete_one({"_id": ObjectId(idx)})
+        flash("삭제 되었습니다.")
+    else:
+        flash("삭제 권한이 없습니다.")
+    return redirect(url_for("show_list"))
 
 # 회원가입
 @app.route("/join", methods=["GET", "POST"])
