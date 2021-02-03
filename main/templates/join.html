@@ -3,8 +3,8 @@
 {% block contents %}
 <form name="form" id="joinForm" action="{{url_for('member.member_join')}}" method="POST">
     <div class="form-group">
-        <label for="name">이름</label>
-        <input class="form-control" type="text" id="name" name="name">
+        <label for="username">이름</label>
+        <input class="form-control" type="text" id="username" name="username">
     </div>
     <div class="form-group">
         <label for="email">이메일</label>
@@ -23,7 +23,7 @@
 
 <script>
     var email = $("#email");
-    var name = $("#name");
+    var username = $("#username");
     var pw = $("#pw");
     var pw2 = $("#pw2");
 
@@ -33,9 +33,9 @@
     function checkForm() {
         console.log("checkForm() call....");
 
-        if(name.val() == "" || name.val().match(pattern)) {
+        if(username.val() == "" || username.val().match(pattern)) {
             alert("이름을 입력해주세요!");
-            name.focus();
+            username.focus();
             return false;
         }
 
