@@ -154,6 +154,45 @@ def show_list() :
                             search=search,
                             keyword=keyword)
 
+@app.route("/edit/<idx>", methods=["GET", "POST"])
+def board_edit(idx):
+    if request.method == "GET":
+        board = mongo.db.board
+        data = board.find_one({"_id" : ObjectId(idx)})
+
+        if data is None:
+            flash("해당 게시물이 존재하지 않습니다.")
+            return redirect(url_for("show_list"))
+        else:
+            if session.get("id") == data.get("writer_id"): # 작성자와 세션아이디가 일치하는지 확인
+                return render_template("edit.html", data=data)
+            else:
+                flash("글 수정 권한이 없습니다.")
+                return redirect(url_for("board_view", idx=data.get("_id")))
+    else:
+        title = request.form.get("title")
+        contents = request.form.get("contents")
+
+        board = mongo.db.board
+        data = board.find_one({"_id" : ObjectId(idx)})
+        if session.get("id") == data.get("writer_id"): # 작성자와 세션아이디가 일치하는지 한 번 더 확인
+            board.update_one({"_id" : ObjectId(idx)}, {
+                "$set" : {
+                    "title": title,
+                    "contents": contents,
+                }
+            })
+            flash("수정되었습니다!")
+            return redirect(url_for("board_view", idx=idx))
+        else:
+            flash("글 수정 권한이 없습니다.")
+            return redirect(url_for("show_list"))
+
+@app.route("/delete")
+def board_delete():
+    idx = request.args.get("idx")
+    return ""
+
 # 회원가입
 @app.route("/join", methods=["GET", "POST"])
 def member_join():
